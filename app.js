@@ -37,7 +37,10 @@ app.use(
 
 app.use(
   cors({
-    origin: ["http://localhost:3001", "http://localhost:3000"],
+    origin: [
+      NODE_ENV !== "development" && "http://localhost:3000",
+      NODE_ENV === "development" && "https://lifeandpro.web.app",
+    ],
     methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
     credentials: true,
   })
