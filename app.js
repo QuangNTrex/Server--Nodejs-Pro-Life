@@ -45,6 +45,21 @@ app.use(
     credentials: true,
   })
 );
+app.use(function (req, res, next) {
+  res.header(
+    "Access-Control-Allow-Origin",
+    `${
+      NODE_ENV !== "development"
+        ? "http://localhost:3000"
+        : "https://lifeandpro.web.app"
+    }`
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 app.use("/auth", AuthRouter);
 app.use("/bill", BillRouter);
