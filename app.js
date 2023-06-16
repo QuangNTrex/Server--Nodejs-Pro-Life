@@ -10,6 +10,7 @@ const AuthRouter = require("./routers/auth");
 const BillRouter = require("./routers/bill");
 
 const MONGODB_URI = process.env.MONGODB_URI;
+const NODE_ENV = process.env.NODE_ENV;
 
 const store = new MongoDBStore({
   uri: MONGODB_URI,
@@ -23,11 +24,11 @@ app.use(
     saveUninitialized: false,
     store: store,
     cookie: {
-      // sameSite: "none",
-      secure: false,
+      sameSite: NODE_ENV === "development" && "none",
+      secure: NODE_ENV === "development",
       // secure: true,
       maxAge: 1000 * 60 * 60,
-      // httpOnly: true,
+      httpOnly: NODE_ENV !== "development",
     },
   })
 );
