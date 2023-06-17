@@ -45,7 +45,7 @@ module.exports.postDeleteBill = (req, res, next) => {
 };
 
 module.exports.postUpdateBills = (req, res, next) => {
-  const bills = req.body.bills || [];
+  const bills = req.body.list || [];
   bills.forEach(async (bill) => {
     const oldBillServer = await Bill.findOne({
       createdAt: bill.createdAt,

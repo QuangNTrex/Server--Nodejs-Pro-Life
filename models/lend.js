@@ -8,7 +8,7 @@ const LendSchema = new Schema({
   totalPrice: { type: Number, required: true, default: 0 },
   list: [
     {
-      totalPrice: { type: Number, required: true, default: 0 },
+      money: { type: Number, required: true, default: 0 },
       title: { type: String, default: "" },
       createdAt: { type: Date, default: Date.now(), required: true },
       updatedAt: { type: Date, default: Date.now(), required: true },

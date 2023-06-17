@@ -8,6 +8,9 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 
 const AuthRouter = require("./routers/auth");
 const BillRouter = require("./routers/bill");
+const DataRouter = require("./routers/data");
+
+const ErrorDB = require("./models/error");
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const NODE_ENV = process.env.NODE_ENV;
@@ -64,6 +67,7 @@ app.use(function (req, res, next) {
 
 app.use("/auth", AuthRouter);
 app.use("/bill", BillRouter);
+app.use("/data", DataRouter);
 
 app.use("/test", (req, res, next) => {
   res.send({ result: "oke" });
@@ -71,7 +75,9 @@ app.use("/test", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send("Something broke!");
+  console.log("in error fn");
+  ErrorDB.create({ error: err });
+  return res.status(500).send({ error: { message: "Something broke!" } });
 });
 
 mongoose.connect(MONGODB_URI).then(() => {
