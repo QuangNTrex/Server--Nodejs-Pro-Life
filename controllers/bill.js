@@ -46,19 +46,20 @@ module.exports.postDeleteBill = (req, res, next) => {
 
 module.exports.postUpdateBills = (req, res, next) => {
   const bills = req.body.bills || [];
-  bills.forEach((bill) => {
-    Bill.findOne({
+  bills.forEach(async (bill) => {
+    const oldBillServer = await Bill.findOne({
       createdAt: bill.createdAt,
       userId: req.session.user._id,
-    }).then((oldBill) => {
-      if (!oldBill) Bill.create({ ...bill, userId: req.session.user._id });
-      else
-        Bill.findByIdAndUpdate(oldBill._id).then((oldBill) => {
-          Object.keys(bill).forEach((key) => (oldBill[key] = bill[key]));
-          oldBill.save();
-        });
     });
+    if (!oldBillServer)
+      await Bill.create({ ...bill, userId: req.session.user._id });
+    else {
+      let updateBillServer = await Bill.findByIdAndUpdate(oldBillServer._id);
+      Object.keys(bill).forEach((key) => (updateBillServer[key] = bill[key]));
+      await updateBillServer.save();
+    }
   });
+  res.send({ result: { message: "Updated" } });
 };
 
 module.exports.getBills = (req, res, next) => {

@@ -5,7 +5,7 @@ const app = express();
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
-app.use(express.json());
+
 const AuthRouter = require("./routers/auth");
 const BillRouter = require("./routers/bill");
 
@@ -17,6 +17,7 @@ const store = new MongoDBStore({
   collection: "sessions",
 });
 
+app.use(express.json());
 app.use(
   session({
     secret: "My Secret",
