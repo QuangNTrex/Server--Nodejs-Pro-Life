@@ -19,6 +19,17 @@ module.exports.postSignUp = (req, res, next) => {
 };
 
 module.exports.postSignIn = (req, res, next) => {
+  // auto login
+  if (req.session.user)
+    return res.send({
+      result: {
+        isLogin: true,
+        email: req.session.user.email,
+        userName: req.session.user.userName,
+        fullName: req.session.user.fullName,
+      },
+    });
+
   const email = req.body.email;
   const password = req.body.password;
   User.findOne({ email })
