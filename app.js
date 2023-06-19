@@ -14,6 +14,7 @@ const ErrorDB = require("./models/error");
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const NODE_ENV = process.env.NODE_ENV;
+console.log("NODE_ENV", NODE_ENV);
 
 const store = new MongoDBStore({
   uri: MONGODB_URI,

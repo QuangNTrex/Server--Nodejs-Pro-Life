@@ -106,19 +106,28 @@ module.exports.getLists = (req, res, next) => {
 module.exports.postSyncList = (req, res, next) => {};
 
 module.exports.postAddShareList = (req, res, next) => {
+  const data = req.body.data;
   const type = req.body.type.toLowerCase();
   const createdAt = req.body.createdAt;
+  const userId = req.session && req.session.user && req.session.user._id;
+
   if (!checkMap.has(type))
     return res.status(400).send({ error: { message: "not have type" } });
-  DATABASE[type]
-    .findOne({ userId: req.session.user._id, createdAt })
-    .then((itemPS) => {
-      if (!itemPS) return res.send({ error: { message: "Not has item" } });
-      ShareData.create({ data: itemPS, type }).then((data) => {
-        return res.send({ result: { _id: data._id.toString(), type } });
-      });
-    })
-    .catch((err) => next(err));
+
+  if (data) {
+    ShareData.create({ data, type }).then((data) => {
+      return res.send({ result: { _id: data._id.toString(), type } });
+    });
+  } else if (userId)
+    DATABASE[type]
+      .findOne({ userId, createdAt })
+      .then((itemPS) => {
+        if (!itemPS) return res.send({ error: { message: "Not has item" } });
+        ShareData.create({ data: itemPS, type }).then((data) => {
+          return res.send({ result: { _id: data._id.toString(), type } });
+        });
+      })
+      .catch((err) => next(err));
 };
 
 module.exports.getShareList = (req, res, next) => {
