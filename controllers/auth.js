@@ -63,4 +63,5 @@ module.exports.postSignIn = (req, res, next) => {
 module.exports.postSignOut = (req, res, next) => {
   req.session.user = null;
   req.session.isLogin = null;
+  req.session.save();
 };

@@ -8,6 +8,7 @@ const Bill = require("../models/bill");
 const Lend = require("../models/lend");
 const Plan = require("../models/plan");
 const Task = require("../models/task");
+const ShareData = require("../models/share-data");
 
 const DATABASE = {
   bill: Bill,
@@ -103,3 +104,29 @@ module.exports.getLists = (req, res, next) => {
 };
 
 module.exports.postSyncList = (req, res, next) => {};
+
+module.exports.postAddShareList = (req, res, next) => {
+  const type = req.body.type.toLowerCase();
+  const createdAt = req.body.createdAt;
+  if (!checkMap.has(type))
+    return res.status(400).send({ error: { message: "not have type" } });
+  DATABASE[type]
+    .findOne({ userId: req.session.user._id, createdAt })
+    .then((itemPS) => {
+      if (!itemPS) return res.send({ error: { message: "Not has item" } });
+      ShareData.create({ data: itemPS, type }).then((data) => {
+        return res.send({ result: { _id: data._id.toString(), type } });
+      });
+    })
+    .catch((err) => next(err));
+};
+
+module.exports.getShareList = (req, res, next) => {
+  const _id = req.params._id;
+
+  ShareData.findById(_id).then((data) => {
+    if (!data)
+      return res.status(400).send({ error: { message: "not have data" } });
+    res.send({ result: { data } });
+  });
+};
