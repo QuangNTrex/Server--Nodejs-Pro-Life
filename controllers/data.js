@@ -106,7 +106,7 @@ module.exports.getLists = (req, res, next) => {
 module.exports.postSyncList = (req, res, next) => {};
 
 module.exports.postAddShareList = (req, res, next) => {
-  const data = req.body.data;
+  const arr = req.body.data;
   const type = req.body.type.toLowerCase();
   const createdAt = req.body.createdAt;
   const userId = req.session && req.session.user && req.session.user._id;
@@ -114,9 +114,24 @@ module.exports.postAddShareList = (req, res, next) => {
   if (!checkMap.has(type))
     return res.status(400).send({ error: { message: "not have type" } });
 
+  let data;
+  data = { ...arr[0] };
+  data.list = [];
+  arr.forEach((itemPC) => {
+    if (itemPC.pay) return;
+    itemPC.list.forEach((itemCC) => {
+      data.list.push(itemCC);
+    });
+  });
+  data.list.sort((itemA, itemB) => itemA.createdAt - itemB.createdAt);
+  data.totalPrice = data.list.reduce(
+    (total, item) => total + (item.money || 0),
+    0
+  );
+
   if (data) {
     ShareData.create({ data, type }).then((data) => {
-      return res.send({ result: { _id: data._id.toString(), type } });
+      return res.send({ result: { _id: data._id.toString(), type, data } });
     });
   } else if (userId)
     DATABASE[type]
@@ -124,7 +139,7 @@ module.exports.postAddShareList = (req, res, next) => {
       .then((itemPS) => {
         if (!itemPS) return res.send({ error: { message: "Not has item" } });
         ShareData.create({ data: itemPS, type }).then((data) => {
-          return res.send({ result: { _id: data._id.toString(), type } });
+          return res.send({ result: { _id: data._id.toString(), type, data } });
         });
       })
       .catch((err) => next(err));

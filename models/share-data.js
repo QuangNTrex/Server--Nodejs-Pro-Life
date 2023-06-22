@@ -8,4 +8,4 @@ const ShareDataSchema = new Schema(
   { strict: false }
 );
 
-module.exports = mongoose.model("ShareData", ShareDataSchema);
+module.exports = mongoose.model("ShareData", ShareDataSchema)
